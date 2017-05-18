@@ -3,11 +3,14 @@ import csv
 import cv2
 import numpy as np
 import os
+from utility import process_image_file
+
 
 def update_with_path(filename_path,file_directory):
     filename = filename_path.split('/')[-1]
     current_path = file_directory + '/IMG/' + filename
     return current_path
+
 
 
 
@@ -28,7 +31,9 @@ def capture_data_from_folder(data_path,camera_correction = 0.2):
         for i in range(0,3):
             filename = line[i]
             image_path = update_with_path(filename,data_path)
-            image = cv2.imread(image_path)
+            image = process_image_file(image_path)
+            if image is None:
+                continue
             measurement = float(line[3])
             if i ==1:
                 measurement = measurement + camera_correction
@@ -58,6 +63,7 @@ def capture_data_from_dir(data_dir):
 
 images, measurements = capture_data_from_dir('../../beclonedata/')
 
+#images, measurements = capture_data_from_folder('../../beclonedata/center')
 
 
 X_train = np.array(images)
@@ -70,8 +76,10 @@ from keras.layers.pooling import MaxPooling2D
 
 
 model = Sequential()
-model.add(Lambda(lambda  x: x/255.0 - 0.5,input_shape=(160,320,3) ))
-model.add(Cropping2D(cropping=((70,25),(0,0))))
+model.add(Lambda(lambda  x: x/255.0 - 0.5,input_shape=(100,320,1) ))
+#model.add(Cropping2D(cropping=((70,25),(0,0))))
+
+
 
 model.add(Convolution2D(24,5,5,subsample=(2,2),activation="relu"))
 model.add(Convolution2D(36,5,5,subsample=(2,2),activation="relu"))
