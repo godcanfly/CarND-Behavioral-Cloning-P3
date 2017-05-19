@@ -120,7 +120,7 @@ def generator(samples, batch_size=32):
 
 
 from keras.models import Sequential
-from keras.layers import Flatten, Dense,Lambda,Cropping2D
+from keras.layers import Flatten, Dense,Lambda,Cropping2D,Dropout
 from keras.layers.convolutional import Convolution2D
 from keras.layers.pooling import MaxPooling2D
 
@@ -137,6 +137,7 @@ model.add(Convolution2D(64,3,3,activation="relu"))
 
 
 model.add(Flatten())
+model.add(Dropout(0.2))
 model.add(Dense(100))
 model.add(Dense(50))
 model.add(Dense(10))
