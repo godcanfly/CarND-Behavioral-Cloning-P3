@@ -3,8 +3,9 @@
 [![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
 
 
-[![project write-up](project.png)](writeup_report.pdf)
-[![Watch the video](road.jpg)](video.mp4)
+
+* Here is project write-up:[![project write-up](project.jpg)](writeup_report.pdf)
+* Here is video  result:[![Watch the video](road.jpg)](video.mp4)
 
 
 Overview
