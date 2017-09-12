@@ -12,6 +12,9 @@ use_generator = True
 DATA_SOURCE_DIRECTORY ='../../beclonedata/'
 CAMERA_CORRECTION = 0.2
 
+
+#return full path with input filename and directory
+
 def update_with_path(filename_path,file_directory):
     filename = filename_path.split('/')[-1]
     current_path = file_directory + '/IMG/' + filename
@@ -19,6 +22,13 @@ def update_with_path(filename_path,file_directory):
 
 
 def capture_data_from_folder(data_path,camera_correction = 0.2):
+
+    """
+    :param data_path: path where the data is stored, structure inside  should be IMG folder and  driving_log.csv
+    :param camera_correction: camera correction value when use left and right camera
+    :return:images and its corresponding steer value.
+    """
+    #
 
     lines = []
     images = []
@@ -49,6 +59,7 @@ def capture_data_from_folder(data_path,camera_correction = 0.2):
             measurements.append(-measurement)
     return images,measurements
 
+#catpure data from folder which has sub_folder
 
 def capture_data_from_dir(data_dir):
     images = []
@@ -62,6 +73,7 @@ def capture_data_from_dir(data_dir):
             measurements.extend(sub_measurements)
     return images,measurements
 
+#return all lines from folder which include driving_log.csv
 
 def get_all_lines_from_dir(data_dir):
     lines = []
@@ -77,6 +89,10 @@ def get_all_lines_from_dir(data_dir):
                     lines.append(line)
 
     return lines
+
+
+
+#every run, create 32 sample
 
 def generator(samples, batch_size=32):
 
@@ -105,6 +121,8 @@ def generator(samples, batch_size=32):
                     if i == 2:
                         measurement = measurement - CAMERA_CORRECTION
 
+                    measurement = measurement * 0.9
+
                     images.append(image)
                     measurements.append(measurement)
                     images.append(np.fliplr(image))
@@ -125,6 +143,9 @@ from keras.layers.convolutional import Convolution2D
 from keras.layers.pooling import MaxPooling2D
 
 
+
+# Use similar pipeline of nvidia self-driving car, add drop out
+
 model = Sequential()
 model.add(Lambda(lambda  x: x/255.0 - 0.5,input_shape=(100,320,1) ))
 
@@ -137,7 +158,7 @@ model.add(Convolution2D(64,3,3,activation="relu"))
 
 
 model.add(Flatten())
-model.add(Dropout(0.2))
+model.add(Dropout(0.2)) #to avoid overfitting
 model.add(Dense(100))
 model.add(Dense(50))
 model.add(Dense(10))
@@ -167,6 +188,6 @@ else:
     X_train = np.array(images)
     y_train = np.array(measurements)
 
-    model.fit(X_train,y_train,validation_split=0.2,shuffle=True,nb_epoch=1)
+    model.fit(X_train,y_train,validation_split=0.2,shuffle=True,nb_epoch=3)
 
 model.save('model.h5')

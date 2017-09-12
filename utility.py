@@ -51,11 +51,15 @@ def region_of_interest(img, vertices):
 
 def process_image_file(image_file_path):
     img = cv2.imread(image_file_path)
-    return process_image(img)
+    return process_image(img,isRGB=False)
 
-def process_image(img):
+def process_image(img,isRGB=True):
     crop_img = img[60:160, 0:320]
-    gray_img = cv2.cvtColor(crop_img, cv2.COLOR_BGR2GRAY)
+    if isRGB:
+        gray_img = cv2.cvtColor(crop_img, cv2.COLOR_RGB2GRAY)
+    else:
+        gray_img = cv2.cvtColor(crop_img, cv2.COLOR_BGR2GRAY)
+
     blur_image=cv2.GaussianBlur(gray_img, (5, 5), 0)
     edges_image = cv2.Canny(blur_image, 50, 150)
     vertices = np.array([[(0,0),(0,100), (160, 50), (320,100), (320, 0)]], dtype=np.int32)
